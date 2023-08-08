@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<img id="img-of-the-day">
+<script>
+  let query = 'https://api.nasa.gov/planetary/apod?api_key=2T1Xs6CYD8NclQcxHg8Ycke2ui6qnPCMmidF39qS';
+  let request = new XMLHttpRequest();
+  request.open('GET', query);
+  request.onload = function() {
+    if (request.status === 200) {
+      let response = JSON.parse(request.responseText);
+      document.getElementById('img-of-the-day').setAttribute('src', response.url);
+    }
+  };
+  request.send();
+</script>
+<form th:object="${image}" th:action="@{/image/save}">
+    <input placeholder="NAME" type="text" th:field="*{id}"><br>
+    <input placeholder="MARK" type="number" min="0" max="5" th:field="*{mark}"><br>
+    <input PLACEHOLDER="AUTHOR" th:field="*{author}"><br>
+    <input placeholder="COMMENT" th:field="*{comment}"><br>
+    <button type="submit">SUBMIT</button>
+</form>
+<br>
+<form th:action="@{/image/search}">
+    <input placeholder="SearchName" name="searchName" type="text" th:field="*{imageSearch}">
+    <button type="submit">Tim Kiem</button>
+</form>
+<table style="border: 1px">
+    <tr>
+        <td>Stt</td>
+        <td>id</td>
+        <td>mark</td>
+        <td>author</td>
+        <td>feedback</td>
+        <td>so luong like</td>
+        <td></td>
+    </tr>
+    <tr th:each="image,status:${images}">
+        <td th:text="${status.count}"> </td>
+        <td th:text="${image.id}">  </td>
+        <td th:text="${image.mark}"> </td>
+        <td th:text="${image.author}"> </td>
+        <td th:text="${image.comment}"></td>
+        <td><button>Like</button></td>
+    </tr>
+</table>
+<a  th:if="${images.hasPrevious()}" th:href="@{/image(page=${images.number-1})}">Previous</a>
+<span th:text="${images.number+1}"></span>
+<span th:text="${images.totalPages}"></span>
+<a  th:if="${images.hasNext()}" th:href="@{/image(page=${images.number+1})}">Next</a>
+</body>
+</html>
